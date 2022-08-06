@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
 import java.util.Date;
+import java.util.List;
 
 public class LocacaoServiceTest {
     private LocacaoService locacaoService;
@@ -33,7 +34,7 @@ public class LocacaoServiceTest {
         // Cenário
         locacaoService = new LocacaoService();
         Usuario usuario = new Usuario("Usuário 1");
-        Filme filme = new Filme("Filme 1", 2, 5.0);
+        List<Filme> filme = List.of(new Filme("Filme 1", 2, 5.0));
 
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filme);
@@ -50,7 +51,7 @@ public class LocacaoServiceTest {
     @Test(expected = FilmeSemEstoqueException.class)
     public void testeLocacaoFilmeSemEstoqueElegante() throws Exception {
         Usuario usuario = new Usuario("Usuário 1");
-        Filme filme = new Filme("Filme 1", 0, 5.0);
+        List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
 
         // Ação
         locacaoService.alugarFilme(usuario, filme);
@@ -59,7 +60,7 @@ public class LocacaoServiceTest {
     @Test
     public void testeLocacaoFilmeSemEstoqueRobusta() {
         Usuario usuario = new Usuario("Usuário 1");
-        Filme filme = new Filme("Filme 1", 0, 5.0);
+        List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
 
         // Ação
         try {
@@ -73,14 +74,14 @@ public class LocacaoServiceTest {
     @Test
     public void testeLocacaoFilmeSemEstoqueNova() {
         Usuario usuario = new Usuario("Usuário 1");
-        Filme filme = new Filme("Filme 1", 0, 5.0);
+        List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
 
         Assert.assertThrows(FilmeSemEstoqueException.class, () -> locacaoService.alugarFilme(usuario, filme));
     }
 
     @Test
     public void testeLocacaoUsuarioVazio() {
-        Filme filme = new Filme("Filme 1", 2, 5.0);
+        List<Filme> filme = List.of(new Filme("Filme 1", 2, 5.0));
 
         // Ação
         Assert.assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(null, filme));
