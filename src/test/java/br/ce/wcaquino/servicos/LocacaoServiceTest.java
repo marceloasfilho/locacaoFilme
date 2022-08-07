@@ -6,7 +6,7 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
-import br.ce.wcaquino.utils.DataUtils;
+import br.ce.wcaquino.utils.DateUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,8 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
@@ -43,7 +42,7 @@ public class LocacaoServiceTest {
 
         // Cenário
         Usuario usuario = umUsuario().agora();
-        List<Filme> filme = List.of(umFilme().agora());
+        List<Filme> filme = List.of(umFilme().comValor(5.0).agora());
 
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filme);
@@ -51,14 +50,14 @@ public class LocacaoServiceTest {
         // Verificação
         Assert.assertEquals(5.0, locacao.getValor(), 0.01);
 
-        Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+        Assert.assertTrue(locacao.getDataLocacao().isEqual(LocalDate.now()));
         errorCollector.checkThat(locacao.getDataLocacao(), ehHoje());
 
-        Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+        Assert.assertTrue(locacao.getDataRetorno().isEqual(DateUtils.obterDataComDiferencaDeDias(LocalDate.now(), 1)));
         errorCollector.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDeDias(1));
 
         errorCollector.checkThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(5.0)));
-        errorCollector.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()), CoreMatchers.is(true));
+        errorCollector.checkThat(locacao.getDataRetorno().isEqual(LocalDate.now()), CoreMatchers.is(false));
     }
 
     @Test(expected = FilmeSemEstoqueException.class)
@@ -112,9 +111,7 @@ public class LocacaoServiceTest {
     public void deveDarDesconto25ppNoFilme3() throws Exception {
         // Cenário
         Usuario usuario = umUsuario().agora();
-        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
-                new Filme("Filme 2", 5, 4.0),
-                new Filme("Filme 3", 8, 4.0));
+        List<Filme> filmes = List.of(umFilme().comNome("Filme1").agora(), umFilme().comNome("Filme2").agora(), umFilme().comNome("Filme3").agora());
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
@@ -126,10 +123,7 @@ public class LocacaoServiceTest {
     public void deveDarDesconto50ppNoFilme4() throws Exception {
         // Cenário
         Usuario usuario = umUsuario().agora();
-        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
-                new Filme("Filme 2", 5, 4.0),
-                new Filme("Filme 3", 8, 4.0),
-                new Filme("Filme 4", 1, 4.0));
+        List<Filme> filmes = List.of(umFilme().comNome("Filme1").agora(), umFilme().comNome("Filme2").agora(), umFilme().comNome("Filme3").agora(), umFilme().comNome("Filme4").agora());
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
@@ -141,11 +135,7 @@ public class LocacaoServiceTest {
     public void deveDarDesconto75ppNoFilme5() throws Exception {
         // Cenário
         Usuario usuario = umUsuario().agora();
-        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
-                new Filme("Filme 2", 5, 4.0),
-                new Filme("Filme 3", 8, 4.0),
-                new Filme("Filme 4", 1, 4.0),
-                new Filme("Filme 5", 2, 4.0));
+        List<Filme> filmes = List.of(umFilme().comNome("Filme1").agora(), umFilme().comNome("Filme2").agora(), umFilme().comNome("Filme3").agora(), umFilme().comNome("Filme4").agora(), umFilme().comNome("Filme5").agora());
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
@@ -157,12 +147,7 @@ public class LocacaoServiceTest {
     public void deveDarDesconto100ppNoFilme6() throws Exception {
         // Cenário
         Usuario usuario = umUsuario().agora();
-        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
-                new Filme("Filme 2", 5, 4.0),
-                new Filme("Filme 3", 8, 4.0),
-                new Filme("Filme 4", 1, 4.0),
-                new Filme("Filme 5", 2, 4.0),
-                new Filme("Filme 6", 2, 4.0));
+        List<Filme> filmes = List.of(umFilme().comNome("Filme1").agora(), umFilme().comNome("Filme2").agora(), umFilme().comNome("Filme3").agora(), umFilme().comNome("Filme4").agora(), umFilme().comNome("Filme5").agora(), umFilme().comNome("Filme6").agora());
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
@@ -178,8 +163,8 @@ public class LocacaoServiceTest {
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
         // Verificação
-        boolean ehSegundaFeira = DataUtils.verificarDiaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
-        errorCollector.checkThat(locacao.getDataRetorno(), caiNumaSegunda());
+        boolean ehSegundaFeira = DateUtils.verificarDiaSemana(locacao.getDataRetorno().getDayOfWeek());
+        errorCollector.checkThat(locacao.getDataRetorno().getDayOfWeek(), caiNumaSegunda());
         Assert.assertTrue(ehSegundaFeira);
     }
 }

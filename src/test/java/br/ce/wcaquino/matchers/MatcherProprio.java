@@ -1,20 +1,21 @@
 package br.ce.wcaquino.matchers;
 
-import br.ce.wcaquino.utils.DataUtils;
+import br.ce.wcaquino.utils.DateUtils;
 
-import java.util.Calendar;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 public class MatcherProprio {
     public static DiaSemanaMatcher caiNumaSegunda() {
-        return new DiaSemanaMatcher(Calendar.MONDAY);
+        return new DiaSemanaMatcher(DayOfWeek.MONDAY);
     }
 
 
     public static MesmaDataMatcher ehHojeComDiferencaDeDias(Integer dias) {
-        return new MesmaDataMatcher(DataUtils.obterDataComDiferencaDias(dias));
+        return new MesmaDataMatcher(DateUtils.obterDataComDiferencaDeDias(LocalDate.now(), dias));
     }
 
-    public static MesmaDataMatcher ehHoje(){
-        return new MesmaDataMatcher(DataUtils.obterDataComDiferencaDias(0));
+    public static MesmaDataMatcher ehHoje() {
+        return new MesmaDataMatcher(DateUtils.obterDataComDiferencaDeDias(LocalDate.now(), 0));
     }
 }

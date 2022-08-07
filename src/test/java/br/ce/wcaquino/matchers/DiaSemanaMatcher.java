@@ -1,31 +1,29 @@
 package br.ce.wcaquino.matchers;
 
-import br.ce.wcaquino.utils.DataUtils;
+import br.ce.wcaquino.utils.DateUtils;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
 import java.util.Locale;
 
-public class DiaSemanaMatcher extends TypeSafeMatcher<Date> {
+public class DiaSemanaMatcher extends TypeSafeMatcher<DayOfWeek> {
 
-    private final Integer diaSemana;
+    private DayOfWeek dia;
 
-    public DiaSemanaMatcher(Integer diaSemana) {
-        this.diaSemana = diaSemana;
+    public DiaSemanaMatcher(DayOfWeek dia) {
+        this.dia = dia;
     }
 
     @Override
-    protected boolean matchesSafely(Date data) {
-        return DataUtils.verificarDiaSemana(data, this.diaSemana);
+    protected boolean matchesSafely(DayOfWeek dia) {
+        return DateUtils.verificarDiaSemana(dia);
     }
 
     @Override
     public void describeTo(Description description) {
-        Calendar data = Calendar.getInstance();
-        data.set(Calendar.DAY_OF_WEEK, diaSemana);
-        String dataExtenso = data.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, new Locale("pt", "BR"));
+        String dataExtenso = dia.getDisplayName(TextStyle.FULL, new Locale("pt", "BR"));
         description.appendText(dataExtenso);
     }
 }

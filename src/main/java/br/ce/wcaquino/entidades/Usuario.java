@@ -4,23 +4,24 @@ import java.util.Objects;
 
 public class Usuario {
 
-	private String nome;
-	
-	public Usuario() {}
-	
-	public Usuario(String nome) {
-		this.nome = nome;
-	}
+    private String nome;
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public Usuario() {
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Usuario usuario = (Usuario) o;
-		return Objects.equals(nome, usuario.nome);
-	}
+    public Usuario(String nome) {
+        this.nome = nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(nome, usuario.nome);
+    }
 }

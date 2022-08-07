@@ -1,22 +1,21 @@
 package br.ce.wcaquino.matchers;
 
-import br.ce.wcaquino.utils.DataUtils;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public class MesmaDataMatcher extends TypeSafeMatcher<Date> {
+public class MesmaDataMatcher extends TypeSafeMatcher<LocalDate> {
 
-    private final Date dataSomada;
+    private final LocalDate dataSomada;
 
-    public MesmaDataMatcher(Date dataSomada) {
+    public MesmaDataMatcher(LocalDate dataSomada) {
         this.dataSomada = dataSomada;
     }
 
     @Override
-    protected boolean matchesSafely(Date data) {
-        return DataUtils.isMesmaData(data, this.dataSomada);
+    protected boolean matchesSafely(LocalDate data) {
+        return data.isEqual(this.dataSomada);
     }
 
     @Override

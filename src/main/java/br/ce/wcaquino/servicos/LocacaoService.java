@@ -6,16 +6,12 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
-import br.ce.wcaquino.utils.DataUtils;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
-import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
-
 public class LocacaoService {
-
     private LocacaoDAO locacaoDAO;
 
     public Locacao alugarFilme(Usuario usuario, List<Filme> listaFilmes) throws Exception {
@@ -35,15 +31,14 @@ public class LocacaoService {
         Locacao locacao = new Locacao();
         locacao.setListaFilmes(listaFilmes);
         locacao.setUsuario(usuario);
-        locacao.setDataLocacao(new Date());
+        locacao.setDataLocacao(LocalDate.now());
         locacao.setValor(this.obterValorLocacao(listaFilmes));
 
         //Entrega no dia seguinte
-        Date dataEntrega = new Date();
-        dataEntrega = adicionarDias(dataEntrega, 1);
+        LocalDate dataEntrega = LocalDate.now().plusDays(1);
 
-        if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
-            dataEntrega = adicionarDias(dataEntrega, 1);
+        if (dataEntrega.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            dataEntrega = dataEntrega.plusDays(1);
         }
 
         locacao.setDataRetorno(dataEntrega);
@@ -80,7 +75,7 @@ public class LocacaoService {
         return soma;
     }
 
-    public void setLocacaoDAO (LocacaoDAO locacaoDAO){
+    public void setLocacaoDAO(LocacaoDAO locacaoDAO) {
         this.locacaoDAO = locacaoDAO;
     }
 }

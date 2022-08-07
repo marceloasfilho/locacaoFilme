@@ -4,7 +4,7 @@ import org.junit.Test;
 
 public class AssertTests {
     @Test
-    public void test(){
+    public void test() {
         Assert.assertTrue(1 == 1);
         Assert.assertEquals(1, 1, 0.0);
         Assert.assertFalse(false);

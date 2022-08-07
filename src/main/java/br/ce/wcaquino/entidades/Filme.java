@@ -6,7 +6,8 @@ public class Filme {
     private Integer estoque;
     private Double precoLocacao;
 
-    public Filme(){}
+    public Filme() {
+    }
 
     public Filme(String nome, Integer estoque, Double precoLocacao) {
         this.nome = nome;
