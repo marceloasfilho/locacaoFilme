@@ -1,19 +1,23 @@
-package br.ce.wcaquino;
+package br.ce.wcaquino.servicos;
 
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
-import br.ce.wcaquino.servicos.LocacaoService;
 import br.ce.wcaquino.utils.DataUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static br.ce.wcaquino.matchers.MatcherProprio.*;
 
 public class LocacaoServiceTest {
     private LocacaoService locacaoService;
@@ -30,7 +34,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveAlugarFilmeComSucesso() throws Exception {
 
-        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+        //Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
         // Cenário
         locacaoService = new LocacaoService();
@@ -42,8 +46,12 @@ public class LocacaoServiceTest {
 
         // Verificação
         Assert.assertEquals(5.0, locacao.getValor(), 0.01);
+
         Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+        errorCollector.checkThat(locacao.getDataLocacao(), ehHoje());
+
         Assert.assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+        errorCollector.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDeDias(1));
 
         errorCollector.checkThat(locacao.getValor(), CoreMatchers.is(CoreMatchers.equalTo(5.0)));
         errorCollector.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()), CoreMatchers.is(true));
@@ -167,7 +175,7 @@ public class LocacaoServiceTest {
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
         // Verificação
         boolean ehSegundaFeira = DataUtils.verificarDiaSemana(locacao.getDataRetorno(), Calendar.MONDAY);
+        errorCollector.checkThat(locacao.getDataRetorno(), caiNumaSegunda());
         Assert.assertTrue(ehSegundaFeira);
-
     }
 }
