@@ -30,7 +30,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacao() throws Exception {
+    public void deveAlugarFilmeComSucesso() throws Exception {
         // Cenário
         locacaoService = new LocacaoService();
         Usuario usuario = new Usuario("Usuário 1");
@@ -49,7 +49,7 @@ public class LocacaoServiceTest {
     }
 
     @Test(expected = FilmeSemEstoqueException.class)
-    public void testeLocacaoFilmeSemEstoqueElegante() throws Exception {
+    public void deveLancarExcecaoAlugarFilmeSemEstoqueFormaElegante() throws Exception {
         Usuario usuario = new Usuario("Usuário 1");
         List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
 
@@ -58,7 +58,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacaoFilmeSemEstoqueRobusta() {
+    public void deveLancarExcecaoAlugarFilmeSemEstoqueFormaRobusta() {
         Usuario usuario = new Usuario("Usuário 1");
         List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
 
@@ -72,7 +72,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacaoFilmeSemEstoqueNova() {
+    public void deveLancarExcecaoAlugarFilmeSemEstoqueFormaFinal() {
         Usuario usuario = new Usuario("Usuário 1");
         List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
 
@@ -80,7 +80,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacaoUsuarioVazio() {
+    public void naoDeveAlugarFilmeSemUsuario() {
         List<Filme> filme = List.of(new Filme("Filme 1", 2, 5.0));
 
         // Ação
@@ -88,10 +88,72 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void testeLocacaoFilmeVazio() {
+    public void naoDeveAlugarFilmeSemFilme() {
         Usuario usuario = new Usuario("Marcelo");
 
         // Ação
         Assert.assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null));
+    }
+
+    @Test
+    public void deveDarDesconto25ppNoFilme3() throws Exception {
+        // Cenário
+        Usuario usuario = new Usuario("Marcelo");
+        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
+                new Filme("Filme 2", 5, 4.0),
+                new Filme("Filme 3", 8, 4.0));
+        // Ação
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Verificação
+        Assert.assertEquals(11.00, locacao.getValor(), 0.0);
+    }
+
+    @Test
+    public void deveDarDesconto50ppNoFilme4() throws Exception {
+        // Cenário
+        Usuario usuario = new Usuario("Marcelo");
+        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
+                new Filme("Filme 2", 5, 4.0),
+                new Filme("Filme 3", 8, 4.0),
+                new Filme("Filme 4", 1, 4.0));
+        // Ação
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Verificação
+        Assert.assertEquals(13.00, locacao.getValor(), 0.0);
+    }
+
+    @Test
+    public void deveDarDesconto75ppNoFilme5() throws Exception {
+        // Cenário
+        Usuario usuario = new Usuario("Marcelo");
+        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
+                new Filme("Filme 2", 5, 4.0),
+                new Filme("Filme 3", 8, 4.0),
+                new Filme("Filme 4", 1, 4.0),
+                new Filme("Filme 5", 2, 4.0));
+        // Ação
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Verificação
+        Assert.assertEquals(14.00, locacao.getValor(), 0.0);
+    }
+
+    @Test
+    public void deveDarDesconto100ppNoFilme6() throws Exception {
+        // Cenário
+        Usuario usuario = new Usuario("Marcelo");
+        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
+                new Filme("Filme 2", 5, 4.0),
+                new Filme("Filme 3", 8, 4.0),
+                new Filme("Filme 4", 1, 4.0),
+                new Filme("Filme 5", 2, 4.0),
+                new Filme("Filme 6", 2, 4.0));
+        // Ação
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
+
+        // Verificação
+        Assert.assertEquals(14.00, locacao.getValor(), 0.0);
     }
 }

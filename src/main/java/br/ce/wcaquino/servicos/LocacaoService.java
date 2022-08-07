@@ -14,13 +14,6 @@ import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
 public class LocacaoService {
 
-    public static void main(String[] args) {
-        List<Filme> lista = List.of(new Filme("Filme 1", 2, 4.00), new Filme("Filme 2", 1, 8.00));
-
-        double sum = lista.stream().mapToDouble(Filme::getPrecoLocacao).sum();
-        boolean b = lista.stream().anyMatch(filme -> filme.getEstoque() == 0);
-
-    }
     public Locacao alugarFilme(Usuario usuario, List<Filme> listaFilmes) throws Exception {
 
         if (usuario == null) {
@@ -39,7 +32,7 @@ public class LocacaoService {
         locacao.setListaFilmes(listaFilmes);
         locacao.setUsuario(usuario);
         locacao.setDataLocacao(new Date());
-        locacao.setValor(listaFilmes.stream().mapToDouble(Filme::getPrecoLocacao).sum());
+        locacao.setValor(this.obterValorLocacao(listaFilmes));
 
         //Entrega no dia seguinte
         Date dataEntrega = new Date();
@@ -50,5 +43,23 @@ public class LocacaoService {
         //TODO adicionar método para salvar
 
         return locacao;
+    }
+
+    private double obterValorLocacao(List<Filme> filmes) {
+        double soma = 0.0;
+        for (int i = 0; i < filmes.size(); i++) {
+            Filme filme = filmes.get(i);
+            double precoLocacao = filme.getPrecoLocacao();
+
+            switch (i){
+                case 2: precoLocacao *= 0.75; break;
+                case 3: precoLocacao *= 0.5; break;
+                case 4: precoLocacao *= 0.25; break;
+                case 5: precoLocacao *= 0.0; break;
+            }
+
+            soma += precoLocacao;
+        }
+        return soma;
     }
 }
