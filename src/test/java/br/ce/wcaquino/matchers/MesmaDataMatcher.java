@@ -8,9 +8,9 @@ import java.util.Date;
 
 public class MesmaDataMatcher extends TypeSafeMatcher<Date> {
 
-    private Date dataSomada;
+    private final Date dataSomada;
 
-    public MesmaDataMatcher (Date dataSomada){
+    public MesmaDataMatcher(Date dataSomada) {
         this.dataSomada = dataSomada;
     }
 

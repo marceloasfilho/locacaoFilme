@@ -1,5 +1,6 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -10,11 +11,12 @@ import br.ce.wcaquino.utils.DataUtils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
 public class LocacaoService {
+
+    private LocacaoDAO locacaoDAO;
 
     public Locacao alugarFilme(Usuario usuario, List<Filme> listaFilmes) throws Exception {
 
@@ -40,14 +42,14 @@ public class LocacaoService {
         Date dataEntrega = new Date();
         dataEntrega = adicionarDias(dataEntrega, 1);
 
-        if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)){
+        if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
             dataEntrega = adicionarDias(dataEntrega, 1);
         }
 
         locacao.setDataRetorno(dataEntrega);
 
         //Salvando a locação...
-        //TODO adicionar método para salvar
+        this.locacaoDAO.salvar(locacao);
 
         return locacao;
     }
@@ -58,15 +60,27 @@ public class LocacaoService {
             Filme filme = filmes.get(i);
             double precoLocacao = filme.getPrecoLocacao();
 
-            switch (i){
-                case 2: precoLocacao *= 0.75; break;
-                case 3: precoLocacao *= 0.5; break;
-                case 4: precoLocacao *= 0.25; break;
-                case 5: precoLocacao *= 0.0; break;
+            switch (i) {
+                case 2:
+                    precoLocacao *= 0.75;
+                    break;
+                case 3:
+                    precoLocacao *= 0.5;
+                    break;
+                case 4:
+                    precoLocacao *= 0.25;
+                    break;
+                case 5:
+                    precoLocacao *= 0.0;
+                    break;
             }
 
             soma += precoLocacao;
         }
         return soma;
+    }
+
+    public void setLocacaoDAO (LocacaoDAO locacaoDAO){
+        this.locacaoDAO = locacaoDAO;
     }
 }

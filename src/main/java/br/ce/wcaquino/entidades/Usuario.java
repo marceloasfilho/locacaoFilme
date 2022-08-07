@@ -12,10 +12,6 @@ public class Usuario {
 		this.nome = nome;
 	}
 
-	public String getNome() {
-		return nome;
-	}
-
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
@@ -26,10 +22,5 @@ public class Usuario {
 		if (o == null || getClass() != o.getClass()) return false;
 		Usuario usuario = (Usuario) o;
 		return Objects.equals(nome, usuario.nome);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(nome);
 	}
 }

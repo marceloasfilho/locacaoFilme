@@ -11,10 +11,6 @@ public class Locacao {
     private Date dataRetorno;
     private Double valor;
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
@@ -42,9 +38,7 @@ public class Locacao {
     public void setValor(Double valor) {
         this.valor = valor;
     }
-    public List<Filme> getListaFilmes() {
-        return listaFilmes;
-    }
+
     public void setListaFilmes(List<Filme> listaFilmes) {
         this.listaFilmes = listaFilmes;
     }

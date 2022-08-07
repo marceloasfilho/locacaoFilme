@@ -14,9 +14,9 @@ public class DataUtils {
 	 * Retorna a data enviada por parametro com a adição dos dias desejado
 	 * 	a Data pode estar no futuro (dias > 0) ou no passado (dias < 0)
 	 * 
-	 * @param data
-	 * @param dias
-	 * @return
+	 * @param data data base
+	 * @param dias dias a serem incrementados ou reduzidos
+	 * @return Date com base na operação
 	 */
 	public static Date adicionarDias(Date data, int dias) {
 		Calendar calendar = Calendar.getInstance();
@@ -27,7 +27,7 @@ public class DataUtils {
 	
 	/**
 	 * Retorna a data atual com a diferenca de dias enviados por parametro
-	 * 		a Data pode estar no futuro (parametro positivo) ou no passado (parametro negativo)
+	 * 		a Data pode estar no futuro (positivo) ou no passado (negativo)
 	 * 
 	 * @param dias Quantidade de dias a ser incrementado/decrementado
 	 * @return Data atualizada
@@ -39,10 +39,10 @@ public class DataUtils {
 	/**
 	 * Retorna uma instância de <code>Date</code> refletindo os valores passados por parametro
 	 * 
-	 * @param dia
-	 * @param mes
-	 * @param ano
-	 * @return
+	 * @param dia dia do mês
+	 * @param mes mês do ano
+	 * @param ano ano
+	 * @return Obtém a data do Calendar
 	 */
 	public static Date obterData(int dia, int mes, int ano){
 		Calendar calendar = Calendar.getInstance();
@@ -56,9 +56,9 @@ public class DataUtils {
 	 * Verifica se uma data é igual a outra
 	 * 	Esta comparação considera apenas dia, mes e ano
 	 * 
-	 * @param data1
-	 * @param data2
-	 * @return
+	 * @param data1 Primeira data
+	 * @param data2 Segunda data
+	 * @return true se forem a mesma data
 	 */
 	public static boolean isMesmaData(Date data1, Date data2) {
 		Calendar calendar1 = Calendar.getInstance();
@@ -75,7 +75,7 @@ public class DataUtils {
 	 * 
 	 * @param data Data a ser avaliada
 	 * @param diaSemana <code>true</code> caso seja o dia da semana desejado, <code>false</code> em caso contrário 
-	 * @return
+	 * @return true se a data cair num dia de semana
 	 */
 	public static boolean verificarDiaSemana(Date data, int diaSemana) {
 		Calendar calendar = Calendar.getInstance();

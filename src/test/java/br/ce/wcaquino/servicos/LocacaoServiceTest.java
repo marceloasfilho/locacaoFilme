@@ -1,5 +1,6 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.dao.LocacaoDAOFake;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -17,6 +18,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
+import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatcherProprio.*;
 
 public class LocacaoServiceTest {
@@ -29,6 +32,8 @@ public class LocacaoServiceTest {
     public void setup() {
         // Cenário
         locacaoService = new LocacaoService();
+        LocacaoDAOFake locacaoDAOFake = new LocacaoDAOFake();
+        locacaoService.setLocacaoDAO(locacaoDAOFake);
     }
 
     @Test
@@ -37,9 +42,8 @@ public class LocacaoServiceTest {
         //Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
         // Cenário
-        locacaoService = new LocacaoService();
-        Usuario usuario = new Usuario("Usuário 1");
-        List<Filme> filme = List.of(new Filme("Filme 1", 2, 5.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filme = List.of(umFilme().agora());
 
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filme);
@@ -59,8 +63,8 @@ public class LocacaoServiceTest {
 
     @Test(expected = FilmeSemEstoqueException.class)
     public void deveLancarExcecaoAlugarFilmeSemEstoqueFormaElegante() throws Exception {
-        Usuario usuario = new Usuario("Usuário 1");
-        List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filme = List.of(umFilme().semEstoque().agora());
 
         // Ação
         locacaoService.alugarFilme(usuario, filme);
@@ -68,8 +72,8 @@ public class LocacaoServiceTest {
 
     @Test
     public void deveLancarExcecaoAlugarFilmeSemEstoqueFormaRobusta() {
-        Usuario usuario = new Usuario("Usuário 1");
-        List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filme = List.of(umFilme().semEstoque().comValor(5.0).agora());
 
         // Ação
         try {
@@ -82,15 +86,15 @@ public class LocacaoServiceTest {
 
     @Test
     public void deveLancarExcecaoAlugarFilmeSemEstoqueFormaFinal() {
-        Usuario usuario = new Usuario("Usuário 1");
-        List<Filme> filme = List.of(new Filme("Filme 1", 0, 5.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filme = List.of(umFilme().semEstoque().agora());
 
         Assert.assertThrows(FilmeSemEstoqueException.class, () -> locacaoService.alugarFilme(usuario, filme));
     }
 
     @Test
     public void naoDeveAlugarFilmeSemUsuario() {
-        List<Filme> filme = List.of(new Filme("Filme 1", 2, 5.0));
+        List<Filme> filme = List.of(umFilme().agora());
 
         // Ação
         Assert.assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(null, filme));
@@ -98,7 +102,7 @@ public class LocacaoServiceTest {
 
     @Test
     public void naoDeveAlugarFilmeSemFilme() {
-        Usuario usuario = new Usuario("Marcelo");
+        Usuario usuario = umUsuario().agora();
 
         // Ação
         Assert.assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(usuario, null));
@@ -107,7 +111,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveDarDesconto25ppNoFilme3() throws Exception {
         // Cenário
-        Usuario usuario = new Usuario("Marcelo");
+        Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
                 new Filme("Filme 2", 5, 4.0),
                 new Filme("Filme 3", 8, 4.0));
@@ -121,7 +125,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveDarDesconto50ppNoFilme4() throws Exception {
         // Cenário
-        Usuario usuario = new Usuario("Marcelo");
+        Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
                 new Filme("Filme 2", 5, 4.0),
                 new Filme("Filme 3", 8, 4.0),
@@ -136,7 +140,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveDarDesconto75ppNoFilme5() throws Exception {
         // Cenário
-        Usuario usuario = new Usuario("Marcelo");
+        Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
                 new Filme("Filme 2", 5, 4.0),
                 new Filme("Filme 3", 8, 4.0),
@@ -152,7 +156,7 @@ public class LocacaoServiceTest {
     @Test
     public void deveDarDesconto100ppNoFilme6() throws Exception {
         // Cenário
-        Usuario usuario = new Usuario("Marcelo");
+        Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0),
                 new Filme("Filme 2", 5, 4.0),
                 new Filme("Filme 3", 8, 4.0),
@@ -169,8 +173,8 @@ public class LocacaoServiceTest {
     @Test
     public void naoDeveDevolverFilmeNoDomingo() throws Exception {
         // Cenário
-        Usuario usuario = new Usuario("Marcelo");
-        List<Filme> filmes = List.of(new Filme("Filme 1", 2, 4.0));
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().agora());
         // Ação
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
         // Verificação

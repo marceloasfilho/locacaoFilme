@@ -1,9 +1,9 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.dao.LocacaoDAOFake;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
-import br.ce.wcaquino.servicos.LocacaoService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-public class CalculoValorLocacao {
+public class CalculoValorLocacaoTest {
     private LocacaoService locacaoService;
 
     @Parameterized.Parameter
@@ -29,6 +29,8 @@ public class CalculoValorLocacao {
     @Before
     public void setup() {
         locacaoService = new LocacaoService();
+        LocacaoDAOFake locacaoDAOFake = new LocacaoDAOFake();
+        locacaoService.setLocacaoDAO(locacaoDAOFake);
     }
 
     public static final Filme filme1 = new Filme("filme1", 2, 4.0);
