@@ -1,6 +1,6 @@
 package br.ce.wcaquino.servicos;
 
-import br.ce.wcaquino.dao.LocacaoDAOFake;
+import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -20,19 +20,28 @@ import java.util.List;
 import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
 import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatcherProprio.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class LocacaoServiceTest {
     private LocacaoService locacaoService;
+    private SPCService spcService;
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
 
     @Before
     public void setup() {
-        // Cenário
+        // Inicialização
         locacaoService = new LocacaoService();
-        LocacaoDAOFake locacaoDAOFake = new LocacaoDAOFake();
-        locacaoService.setLocacaoDAO(locacaoDAOFake);
+
+        // Criação dos Mocks
+        this.spcService = mock(SPCService.class);
+        LocacaoDAO locacaoDAO = mock(LocacaoDAO.class);
+
+        // Injeção de Dependência
+        locacaoService.setLocacaoDAO(locacaoDAO);
+        locacaoService.setSpcService(this.spcService);
     }
 
     @Test
@@ -166,5 +175,16 @@ public class LocacaoServiceTest {
         boolean ehSegundaFeira = DateUtils.verificarDiaSemana(locacao.getDataRetorno().getDayOfWeek());
         errorCollector.checkThat(locacao.getDataRetorno().getDayOfWeek(), caiNumaSegunda());
         Assert.assertTrue(ehSegundaFeira);
+    }
+
+    @Test
+    public void naoDeveAlugarFilmeParaNegativadoSPC() {
+        // Cenário
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().agora());
+        // Ação
+        when(this.spcService.possuiNegativacao(usuario)).thenReturn(true);
+        // Verificação
+        Assert.assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(usuario, filmes));
     }
 }

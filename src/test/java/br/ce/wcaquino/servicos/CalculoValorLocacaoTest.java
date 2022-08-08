@@ -1,6 +1,6 @@
 package br.ce.wcaquino.servicos;
 
-import br.ce.wcaquino.dao.LocacaoDAOFake;
+import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class CalculoValorLocacaoTest {
     private LocacaoService locacaoService;
+    private SPCService spcService;
 
     @Parameterized.Parameter
     public List<Filme> listaFilmes;
@@ -28,9 +30,16 @@ public class CalculoValorLocacaoTest {
 
     @Before
     public void setup() {
+        // Inicialização
         locacaoService = new LocacaoService();
-        LocacaoDAOFake locacaoDAOFake = new LocacaoDAOFake();
-        locacaoService.setLocacaoDAO(locacaoDAOFake);
+
+        // Criação de Mocks
+        LocacaoDAO locacaoDAO = Mockito.mock(LocacaoDAO.class);
+        this.spcService = Mockito.mock(SPCService.class);
+
+        // Injeção de Dependência
+        locacaoService.setLocacaoDAO(locacaoDAO);
+        locacaoService.setSpcService(this.spcService);
     }
 
     public static final Filme filme1 = new Filme("filme1", 2, 4.0);
