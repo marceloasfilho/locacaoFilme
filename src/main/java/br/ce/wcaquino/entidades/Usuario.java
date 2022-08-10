@@ -24,4 +24,11 @@ public class Usuario {
         Usuario usuario = (Usuario) o;
         return Objects.equals(nome, usuario.nome);
     }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "nome='" + nome + '\'' +
+                '}';
+    }
 }

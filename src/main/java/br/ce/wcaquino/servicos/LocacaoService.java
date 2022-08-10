@@ -14,6 +14,7 @@ import java.util.List;
 public class LocacaoService {
     private LocacaoDAO locacaoDAO;
     private SPCService spcService;
+    private EmailService emailService;
     public Locacao alugarFilme(Usuario usuario, List<Filme> listaFilmes) throws Exception {
 
         if (usuario == null) {
@@ -79,11 +80,19 @@ public class LocacaoService {
         return soma;
     }
 
+    public void notificarAtrasos(){
+        List<Locacao> locacoes = this.locacaoDAO.obterLocacoesPendentes();
+        locacoes.forEach(locacao -> this.emailService.notificarAtraso(locacao.getUsuario()));
+    }
+
     public void setLocacaoDAO(LocacaoDAO locacaoDAO) {
         this.locacaoDAO = locacaoDAO;
     }
 
     public void setSpcService (SPCService spcService){
         this.spcService = spcService;
+    }
+    public void setEmailService(EmailService emailService){
+        this.emailService = emailService;
     }
 }

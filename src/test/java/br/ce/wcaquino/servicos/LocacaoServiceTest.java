@@ -1,5 +1,6 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.builders.LocacaoBuilder;
 import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -13,19 +14,24 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
+import static br.ce.wcaquino.builders.LocacaoBuilder.*;
 import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatcherProprio.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LocacaoServiceTest {
     private LocacaoService locacaoService;
     private SPCService spcService;
+    private LocacaoDAO locacaoDAO;
+    private EmailService emailService;
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
@@ -33,15 +39,17 @@ public class LocacaoServiceTest {
     @Before
     public void setup() {
         // Inicialização
-        locacaoService = new LocacaoService();
+        this.locacaoService = new LocacaoService();
 
         // Criação dos Mocks
         this.spcService = mock(SPCService.class);
-        LocacaoDAO locacaoDAO = mock(LocacaoDAO.class);
+        this.locacaoDAO = mock(LocacaoDAO.class);
+        this.emailService = mock(EmailService.class);
 
         // Injeção de Dependência
-        locacaoService.setLocacaoDAO(locacaoDAO);
-        locacaoService.setSpcService(this.spcService);
+        this.locacaoService.setLocacaoDAO(this.locacaoDAO);
+        this.locacaoService.setSpcService(this.spcService);
+        this.locacaoService.setEmailService(this.emailService);
     }
 
     @Test
@@ -182,9 +190,24 @@ public class LocacaoServiceTest {
         // Cenário
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
-        // Ação
         when(this.spcService.possuiNegativacao(usuario)).thenReturn(true);
+
+        // Ação
+        Assert.assertThrows(LocadoraException.class, () -> this.locacaoService.alugarFilme(usuario, filmes));
+
         // Verificação
-        Assert.assertThrows(LocadoraException.class, () -> locacaoService.alugarFilme(usuario, filmes));
+        verify(this.spcService).possuiNegativacao(usuario);
+    }
+
+    @Test
+    public void deveEnviarEmailParaLocacoesAtrasadas(){
+        // Cenário
+        Usuario usuario = umUsuario().agora();
+        List<Locacao> locacoes = List.of(umLocacao().comUsuario(usuario).comDataLocacao(LocalDate.now().minusDays(2)).agora());
+        when(this.locacaoDAO.obterLocacoesPendentes()).thenReturn(locacoes);
+        // Ação
+        this.locacaoService.notificarAtrasos();
+        // Verificação
+        verify(this.emailService).notificarAtraso(usuario);
     }
 }
