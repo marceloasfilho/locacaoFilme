@@ -24,7 +24,6 @@ public class LocacaoBuilder {
         builder.locacao = new Locacao();
         Locacao locacao = builder.locacao;
 
-
         locacao.setUsuario(UsuarioBuilder.umUsuario().agora());
         locacao.setListaFilmes(List.of(FilmeBuilder.umFilme().agora()));
         locacao.setDataLocacao(LocalDate.now());
@@ -33,31 +32,37 @@ public class LocacaoBuilder {
     }
 
     public LocacaoBuilder comUsuario(Usuario usuario) {
-        locacao.setUsuario(usuario);
+        this.locacao.setUsuario(usuario);
         return this;
     }
 
     public LocacaoBuilder comListaListaFilmes(Filme... params) {
-        locacao.setListaFilmes(Arrays.asList(params));
+        this.locacao.setListaFilmes(Arrays.asList(params));
         return this;
     }
 
     public LocacaoBuilder comDataLocacao(LocalDate dataLocacao) {
-        locacao.setDataLocacao(dataLocacao);
+        this.locacao.setDataLocacao(dataLocacao);
+        return this;
+    }
+
+    public LocacaoBuilder atrasado() {
+        this.locacao.setDataLocacao(LocalDate.now().minusDays(4));
+        this.locacao.setDataRetorno(LocalDate.now().minusDays(2));
         return this;
     }
 
     public LocacaoBuilder comDataRetorno(LocalDate dataRetorno) {
-        locacao.setDataRetorno(dataRetorno);
+        this.locacao.setDataRetorno(dataRetorno);
         return this;
     }
 
     public LocacaoBuilder comValor(Double valor) {
-        locacao.setValor(valor);
+        this.locacao.setValor(valor);
         return this;
     }
 
     public Locacao agora() {
-        return locacao;
+        return this.locacao;
     }
 }

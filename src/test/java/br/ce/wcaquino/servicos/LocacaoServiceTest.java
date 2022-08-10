@@ -190,7 +190,7 @@ public class LocacaoServiceTest {
         // Cenário
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
-        when(this.spcService.possuiNegativacao(usuario)).thenReturn(true);
+        when(this.spcService.possuiNegativacao(any(Usuario.class))).thenReturn(true);
 
         // Ação
         Assert.assertThrows(LocadoraException.class, () -> this.locacaoService.alugarFilme(usuario, filmes));
@@ -203,11 +203,17 @@ public class LocacaoServiceTest {
     public void deveEnviarEmailParaLocacoesAtrasadas(){
         // Cenário
         Usuario usuario = umUsuario().agora();
-        List<Locacao> locacoes = List.of(umLocacao().comUsuario(usuario).comDataLocacao(LocalDate.now().minusDays(2)).agora());
+        Usuario usuario1 = umUsuario().comNome("Usuário em Dia").agora();
+
+        List<Locacao> locacoes = List.of(
+                umLocacao().atrasado().comUsuario(usuario).comDataLocacao(LocalDate.now().minusDays(2)).agora(),
+                umLocacao().comUsuario(usuario1).agora());
         when(this.locacaoDAO.obterLocacoesPendentes()).thenReturn(locacoes);
         // Ação
         this.locacaoService.notificarAtrasos();
         // Verificação
         verify(this.emailService).notificarAtraso(usuario);
+        verify(this.emailService, never()).notificarAtraso(usuario1);
+        verify(this.emailService, times(1)).notificarAtraso(any(Usuario.class));
     }
 }

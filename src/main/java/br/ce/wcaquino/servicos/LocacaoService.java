@@ -15,6 +15,7 @@ public class LocacaoService {
     private LocacaoDAO locacaoDAO;
     private SPCService spcService;
     private EmailService emailService;
+
     public Locacao alugarFilme(Usuario usuario, List<Filme> listaFilmes) throws Exception {
 
         if (usuario == null) {
@@ -29,7 +30,7 @@ public class LocacaoService {
             throw new FilmeSemEstoqueException("Filme sem estoque!");
         }
 
-        if (this.spcService.possuiNegativacao(usuario)){
+        if (this.spcService.possuiNegativacao(usuario)) {
             throw new LocadoraException("Usuário negativado!");
         }
 
@@ -80,19 +81,20 @@ public class LocacaoService {
         return soma;
     }
 
-    public void notificarAtrasos(){
+    public void notificarAtrasos() {
         List<Locacao> locacoes = this.locacaoDAO.obterLocacoesPendentes();
-        locacoes.forEach(locacao -> this.emailService.notificarAtraso(locacao.getUsuario()));
+        locacoes.stream().filter(locacao -> locacao.getDataRetorno().isBefore(LocalDate.now())).forEach(locacao -> this.emailService.notificarAtraso(locacao.getUsuario()));
     }
 
     public void setLocacaoDAO(LocacaoDAO locacaoDAO) {
         this.locacaoDAO = locacaoDAO;
     }
 
-    public void setSpcService (SPCService spcService){
+    public void setSpcService(SPCService spcService) {
         this.spcService = spcService;
     }
-    public void setEmailService(EmailService emailService){
+
+    public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
     }
 }
