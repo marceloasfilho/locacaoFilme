@@ -1,6 +1,5 @@
 package br.ce.wcaquino.servicos;
 
-import br.ce.wcaquino.builders.LocacaoBuilder;
 import br.ce.wcaquino.dao.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
@@ -14,23 +13,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static br.ce.wcaquino.builders.FilmeBuilder.umFilme;
-import static br.ce.wcaquino.builders.LocacaoBuilder.*;
+import static br.ce.wcaquino.builders.LocacaoBuilder.umLocacao;
 import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatcherProprio.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class LocacaoServiceTest {
+    @InjectMocks
     private LocacaoService locacaoService;
+    @Mock
     private SPCService spcService;
+    @Mock
     private LocacaoDAO locacaoDAO;
+    @Mock
     private EmailService emailService;
 
     @Rule
@@ -38,18 +41,7 @@ public class LocacaoServiceTest {
 
     @Before
     public void setup() {
-        // Inicialização
-        this.locacaoService = new LocacaoService();
-
-        // Criação dos Mocks
-        this.spcService = mock(SPCService.class);
-        this.locacaoDAO = mock(LocacaoDAO.class);
-        this.emailService = mock(EmailService.class);
-
-        // Injeção de Dependência
-        this.locacaoService.setLocacaoDAO(this.locacaoDAO);
-        this.locacaoService.setSpcService(this.spcService);
-        this.locacaoService.setEmailService(this.emailService);
+        openMocks(this);
     }
 
     @Test
@@ -200,7 +192,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void deveEnviarEmailParaLocacoesAtrasadas(){
+    public void deveEnviarEmailParaLocacoesAtrasadas() {
         // Cenário
         Usuario usuario = umUsuario().agora();
         Usuario usuario1 = umUsuario().comNome("Usuário em Dia").agora();

@@ -9,17 +9,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static org.mockito.MockitoAnnotations.openMocks;
+
 @RunWith(Parameterized.class)
 public class CalculoValorLocacaoTest {
+    @InjectMocks
     private LocacaoService locacaoService;
-    private SPCService spcService;
 
+    @Mock
+    private SPCService spcService;
+    @Mock
+    private LocacaoDAO locacaoDAO;
     @Parameterized.Parameter
     public List<Filme> listaFilmes;
     @Parameterized.Parameter(value = 1)
@@ -30,16 +37,7 @@ public class CalculoValorLocacaoTest {
 
     @Before
     public void setup() {
-        // Inicialização
-        locacaoService = new LocacaoService();
-
-        // Criação de Mocks
-        LocacaoDAO locacaoDAO = Mockito.mock(LocacaoDAO.class);
-        this.spcService = Mockito.mock(SPCService.class);
-
-        // Injeção de Dependência
-        locacaoService.setLocacaoDAO(locacaoDAO);
-        locacaoService.setSpcService(this.spcService);
+        openMocks(this);
     }
 
     public static final Filme filme1 = new Filme("filme1", 2, 4.0);
