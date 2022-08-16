@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -38,6 +40,9 @@ public class LocacaoServiceTest {
 
     @Rule
     public ErrorCollector errorCollector = new ErrorCollector();
+
+    @Captor
+    ArgumentCaptor<Locacao> locacaoArgumentCaptor;
 
     @Before
     public void setup() {
@@ -178,7 +183,7 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void naoDeveAlugarFilmeParaNegativadoSPC() {
+    public void naoDeveAlugarFilmeParaNegativadoSPC() throws Exception {
         // Cenário
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = List.of(umFilme().agora());
@@ -207,5 +212,34 @@ public class LocacaoServiceTest {
         verify(this.emailService).notificarAtraso(usuario);
         verify(this.emailService, never()).notificarAtraso(usuario1);
         verify(this.emailService, times(1)).notificarAtraso(any(Usuario.class));
+    }
+
+    @Test
+    public void deveTratarErroSPC() throws Exception {
+        // Cenário
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = List.of(umFilme().agora());
+
+        // Verificação
+        when(this.spcService.possuiNegativacao(usuario)).thenThrow(new Exception("Falha Catastrófica"));
+        Assert.assertThrows(Exception.class, () -> this.locacaoService.alugarFilme(usuario, filmes));
+
+        // Ação
+    }
+
+    @Test
+    public void deveProrrogarUmaLocacao(){
+        // Cenário
+        Locacao locacao = umLocacao().agora();
+
+        // Ação
+        this.locacaoService.prorrogarLocacao(locacao, 3);
+
+        // Verificação
+        verify(this.locacaoDAO).salvar(this.locacaoArgumentCaptor.capture());
+        Locacao locacaoRetornada = this.locacaoArgumentCaptor.getValue();
+        Assert.assertEquals(locacaoRetornada.getValor(), 12.00, 0.0);
+        this.errorCollector.checkThat(locacaoRetornada.getDataLocacao(), ehHoje());
+        this.errorCollector.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDeDias(3));
     }
 }

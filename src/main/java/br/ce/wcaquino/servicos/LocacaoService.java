@@ -85,4 +85,14 @@ public class LocacaoService {
         List<Locacao> locacoes = this.locacaoDAO.obterLocacoesPendentes();
         locacoes.stream().filter(locacao -> locacao.getDataRetorno().isBefore(LocalDate.now())).forEach(locacao -> this.emailService.notificarAtraso(locacao.getUsuario()));
     }
+
+    public void prorrogarLocacao(Locacao locacao, int dias){
+        Locacao novaLocacao = new Locacao();
+        novaLocacao.setUsuario(locacao.getUsuario());
+        novaLocacao.setListaFilmes(locacao.getFilmes());
+        novaLocacao.setDataLocacao(LocalDate.now());
+        novaLocacao.setDataRetorno(LocalDate.now().plusDays(dias));
+        novaLocacao.setValor(locacao.getValor() * dias);
+        this.locacaoDAO.salvar(novaLocacao);
+    }
 }

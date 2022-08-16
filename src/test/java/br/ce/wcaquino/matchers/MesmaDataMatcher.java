@@ -4,6 +4,7 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class MesmaDataMatcher extends TypeSafeMatcher<LocalDate> {
 
@@ -20,6 +21,6 @@ public class MesmaDataMatcher extends TypeSafeMatcher<LocalDate> {
 
     @Override
     public void describeTo(Description description) {
-
+        description.appendText(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(this.dataSomada));
     }
 }
